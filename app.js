@@ -50,6 +50,15 @@ app.post('/todos', (req, res) => {
     .then(() => res.redirect('/'))
     .catch(error => console.log(error))
 })
+// Read detail
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id
+  Todo.findById(id)
+    .lean()
+    .then((todo) => res.render('detail', { todo }))
+    .catch(error => console.log(error))
+  console.log(Todo.findById(id))
+})
 
 app.listen(port, () => {
   console.log('App is running on http://localhost:3000')
