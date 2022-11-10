@@ -1,7 +1,12 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const exphbs = require('express-handlebars')
 const port = 3000
 const app = express()
+
+// 載入handlebars
+app.engine('hbs',exphbs.engine({defaultLayout:'main',extname:'.hbs'}))
+app.set('view engine','hbs')
 
 // 加入這段 code, 僅在非正式環境時, 使用 dotenv
 if (process.env.NODE_ENV !== 'production') {
@@ -21,11 +26,10 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
-
-
+// TODO首頁
 
 app.get('/', (req, res) => {
-  res.send('<h1>Hiiiiii</h1>')
+  res.render('index')
 })
 
 app.listen(port, () => {
