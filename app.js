@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
+// 引用路由器
+const routes = require('./routes')
 
-const Todo = require('./models/todo')
 const port = 3000
 const app = express()
 
@@ -17,6 +18,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 // 載入method-override
 app.use(methodOverride('_method'))
+
+// 將 request 導入路由器
+app.use(routes)
 
 // 加入這段 code, 僅在非正式環境時, 使用 dotenv
 if (process.env.NODE_ENV !== 'production') {
@@ -36,65 +40,6 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
-// TODO首頁
-app.get('/', (req, res) => {
-  Todo.find()
-    .lean()
-    .sort({ _id: 'asc' })
-    .then(todos => res.render('index', { todos }))
-    .catch(error => console.error(error))
-})
-// create route
-app.get('/todos/new', (req, res) => {
-  return res.render('new')
-})
-
-app.post('/todos', (req, res) => {
-  const name = req.body.name
-  return Todo.create({ name })
-    .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
-})
-// Read detail route
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .lean()
-    .then((todo) => res.render('detail', { todo }))
-    .catch(error => console.log(error))
-})
-
-// edit route
-
-app.get('/todos/:id/edit', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .lean()
-    .then((todo) => res.render('edit', { todo }))
-    .catch(error => console.log(error))
-})
-
-app.put('/todos/:id', (req, res) => {
-  const id = req.params.id
-  const { name, isDone } = req.body
-  return Todo.findById(id)
-    .then(todo => {
-      todo.name = name
-      todo.isDone = isDone === 'on'
-      return todo.save()
-    })
-    .then(() => res.redirect(`/todos/${id}`))
-    .catch(error => console.log(error))
-})
-
-// delete route
-app.delete('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .then(todo => todo.remove())
-    .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
-})
 
 // listen app
 app.listen(port, () => {
