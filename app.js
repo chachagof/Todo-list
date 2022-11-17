@@ -5,6 +5,10 @@ const methodOverride = require('method-override')
 const PORT = process.env.PORT || 3000
 // 引用路由器
 const routes = require('./routes')
+// 加入這段 code, 僅在非正式環境時, 使用 dotenv
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 require('./config/mongoose')
 
